@@ -11,8 +11,6 @@ if sys.version_info.major == 2:
 else:
     import queue
 
-NUM_WORKERS = 1 # Don't use more than 1 worker unless you have enough memory
-
 # Resources
 pwd = os.getcwd()
 VIDEO = "jabulani_vid2.mp4"
@@ -63,11 +61,11 @@ def detect_objects(sess, tf_graph, frame_rgb):
     return(np.squeeze(boxes), np.squeeze(scores), np.squeeze(classes).astype(np.int32))
 
 class detector(mp.Process):
-    def __init__(self, input_q, output_q, exit_event):
+    def __init__(self, input_q, output_q):
         super(detector, self).__init__()
         self.input = input_q
         self.output = output_q
-        self.exit = exit_event
+        self.exit = mp.Event()
 
     def run(self):
         # Load TF graph 
@@ -93,17 +91,11 @@ class detector(mp.Process):
 
 
 if __name__ == "__main__":
-    workers = []
-    in_q = []
-    out_q = []
-
-    for i in range(NUM_WORKERS):
-        i, o, e = mp.Queue(), mp.Queue(), mp.Event()
-        w = detector(i, o, e)
-        w.start()
-        workers.append(w)
-        in_q.append(i)
-        out_q.append(o)
+    
+    in_q = mp.Queue()
+    out_q = mp.Queue()
+    worker = detector(in_q, out_q)
+    worker.start()
 
     print("\n")
     print(25*"#")
@@ -118,24 +110,21 @@ if __name__ == "__main__":
         while cap.isOpened():
             valid_frame, frame = cap.read()
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            for inq in in_q:
-                inq.put(frame_rgb)
             duration = -time()
-            for outq in out_q:
-                outq.get()
+            in_q.put(frame_rgb)
+            out_q.get()
             duration += time()
-            print("[{:05d}] Detection took {:.2f} ms for {} workers".format(counter, duration * 1000 , NUM_WORKERS))
+            print("[{:05d}] Detection took {:.2f} ms".format(counter, duration * 1000))
             counter += 1
             sum += duration * 1000
     except KeyboardInterrupt:
         pass
     finally:
-        for worker in workers:
-            worker.stop()
-            worker.join(5) # wait 5 seconds
-            if worker.exitcode:
-                worker.terminate()
-                print("Have to terminate worker")
+        worker.stop()
+        worker.join(10) # wait 5 seconds
+        if worker.is_alive() and not worker.exitcode:
+            worker.terminate()
+            print("Have to terminate worker")
 
     print(25*"#")
     print("# Finished benchmarking")
