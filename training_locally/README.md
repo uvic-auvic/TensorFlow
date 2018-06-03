@@ -36,11 +36,15 @@ TensorFlow models is the research project which brings us the object detection A
 
 On windows that can be done with this command
 
-`set PYTHONPATH="C:\path\to\models;C:\path\to\models\research;C:\path\to\models\research\slim;C:\path\to\models\research\object_detction"`
+```
+set PYTHONPATH="C:\path\to\models;C:\path\to\models\research;C:\path\to\models\research\slim;C:\path\to\models\research\object_detction"
+```
 
 On Linux
 
-`export PYTHONPATH=$PYTHONPATH:/path/to/models:/path/to/models/researc:/path/to/models/research/slim:/path/to/models/research/object_detection`
+```
+export PYTHONPATH=$PYTHONPATH:/path/to/models:/path/to/models/researc:/path/to/models/research/slim:/path/to/models/research/object_detection
+```
 
 It is important to note that both the models directory, the research directory and slim directory all need to be added to the path
 
