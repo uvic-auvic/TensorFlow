@@ -8,7 +8,7 @@ TensorFlow is a Deep-Learning Library which can be used for many things such as 
 
 # How can I train on my Computer?
 
-checkout our extensive guide [here!](/training_locally)
+Checkout our extensive guide [here!](/training_locally)
 
 # How can I train on the cloud?
 
