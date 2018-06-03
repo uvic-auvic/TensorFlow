@@ -1,7 +1,5 @@
 # Training an Object Detection Model Locally
 
-## Prerequisites
-
 TensorFlow should be installed correctly on your system
 
 You will need Python 2 if you are on linux or Python 3 on windows. PIP is also required.
@@ -9,22 +7,23 @@ You will need Python 2 if you are on linux or Python 3 on windows. PIP is also r
 ## Image Gathering
 
 To train a model using TensorFlow's object detection API, we first need to gather enough input data to create the model. 
-A good model for our purposes needs > 100 images of medium (300 x 300) quality. The images should be taken at multiple angles and distances and with varying surroundings. It is prefereable to have the images in JPEG format.
+A good model for our purposes needs > 100 images of medium (300 x 300) quality. The images should be taken at multiple angles and distances and with varying surroundings. It is prefereable to have the images in JPEG format. Remove all the spaces in the filenames as well.
 
-Create a folder called `images` and `annotations`. Inside the images folder, for each class, create a new folder and place all of their images in there. The structure of your folder should like like this. It is advisable to place these folders into this current directory
+Create a folder called `images` and `annotations`. Inside the images folder, for each class, create a new folder and place all of their images in there. The structure of your folder should look like this. It is advisable to place these folders into this current directory
 
 ```
--images
-    -class_a
-        -*.jpg
+images
+    class_a
+        file_1.jpg
+        file_2.jpg
         ...
--annotations
-    -file_1.xml
-    -file_2.xml
+annotations
+    file_1.xml
+    file_2.xml
     ...
 ```
 
-## Annotation
+## Annotating
 
 Once the images have been collected it is time to annotate the images. clone our version of labelimg [here](https://github.com/uvic-auvic/labelimg) and run it with Python 3. You may need to install a few dependencies such as PyQt5 and lxml. Once that is working make sure that the output format is set to Pascal VOC. 
 
@@ -37,7 +36,7 @@ TensorFlow models is the research project which brings us the object detection A
 On windows that can be done with this command
 
 ```
-set PYTHONPATH="C:\path\to\models;C:\path\to\models\research;C:\path\to\models\research\slim;C:\path\to\models\research\object_detction"
+set PYTHONPATH="C:\path\to\models;C:\path\to\models\research;C:\path\to\models\research\slim;C:\path\to\models\research\object_detection"
 ```
 
 On Linux
@@ -46,16 +45,13 @@ On Linux
 export PYTHONPATH=$PYTHONPATH:/path/to/models:/path/to/models/researc:/path/to/models/research/slim:/path/to/models/research/object_detection
 ```
 
-It is important to note that both the models directory, the research directory and slim directory all need to be added to the path
-
+It is important to note that the relevant subdirectories of models need to get added as well.
 Once that has been added to path, we need to compile the protocol buffer classes.
-
 Install the protocol buffer application from the instructions [here](https://github.com/google/protobuf) and enter the research directory of tensorflow/models/
-
 Assuming, protoc has been added to your path, run the command 
 `protoc --python_out=. object_detection/protos/*.proto`
 
-This command may not work on windows, because of globbing, and you may have to list out every .proto file in that directory.
+This command may not work on windows, because of globbing, and you may have to list out every .proto file in that directory manually.
 
 ## Creating the TF records
 
@@ -71,9 +67,10 @@ item {
     id: 2
     name: 'gate'
 }
+...
 ```
 
-You should also modify the generate_tf_record.py file to return the same values as is listed in the `class_text__to_int` function.
+You should also modify the generate_tf_record.py file to return the same values as is listed in the `class_text_to_int` function.
 
 Now all that is left to be done is to run the script `generate_tf_record.py`. This will generate the binary record file that we can work with. If all goes well you should see a `train.record` and `val.record` in your directory.
 
@@ -90,7 +87,7 @@ There are a few things we need to change in the config file such as:
 
 - fine_tune_checkpoint: set to the directory of the downloaded SSD model.cpkt file
 
-- num_steps: limit this to the max amount of steps you want to perform. Typcally something fomr 40,000 - 25,000 is enough to get accurate results
+- num_steps: limit this to the max amount of steps you want to perform. Typcally something from 20,000 - 40,000 is enough to get accurate results
 
 - input_path: set to the `train.record` and `val.record` respectively
 
@@ -119,4 +116,5 @@ python /path/to/models/research/object_detection/export_inference_graph.py --inp
 # replace the XXXX with the latest number in your training directory
 ``` 
 
-the frozen graph should be saved into the inference_graph directory as frozen_inference_graph.pb. You should now be able to execute your graph
+the frozen graph should be saved into the inference_graph directory as frozen_inference_graph.pb. You should now be able to execute your model.
+Checkout [inference](/inference) for some sameple scripts to get you running.

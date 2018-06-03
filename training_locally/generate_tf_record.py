@@ -29,10 +29,6 @@ flags.DEFINE_string('image_dir', '', 'Path to the image directory')
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
 FLAGS = flags.FLAGS
 
-
-def parse_json_record(filename):
-    return 1
-
 # TO-DO replace this with label map
 def class_text_to_int(row_label):
     return 1
@@ -142,7 +138,8 @@ def create_train_val(image_dir):
     xml_train = xml_to_csv(train_files)
     xml_train.to_csv(('train_labels.csv'), index=None)
     xml_train = xml_to_csv(val_files)
-    xml_train.to_csv(('val_labels.csv'), index=None)    
+    xml_train.to_csv(('val_labels.csv'), index=None)
+    print("%d examples used for eval. Make sure you change this in your config file under \'num_examples\'" % len(val_files))    
     
 def main(_):
     IMAGE_DIR = 'images'
