@@ -17,7 +17,11 @@ Create a folder called `images` and `annotations`. Inside the images folder, for
 -images
     -class_a
         -*.jpg
+        ...
 -annotations
+    -file_1.xml
+    -file_2.xml
+    ...
 ```
 
 ## Annotation
