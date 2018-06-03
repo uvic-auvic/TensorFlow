@@ -6,7 +6,15 @@ TensorFlow is a Deep-Learning Library which can be used for many things such as 
 
 2. image classification 
 
-# How well does it run
+# How can I train on my Computer?
+
+checkout our extensive guide [here!](/training_locally)
+
+# How can I train on the cloud?
+
+coming soon...
+
+# How well does it run?
 
 Benchmark TensorFlow with your model on yoursystem 
 
