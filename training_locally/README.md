@@ -68,3 +68,47 @@ item {
 You should also modify the generate_tf_record.py file to return the same values as is listed in the `class_text__to_int` function.
 
 Now all that is left to be done is to run the script `generate_tf_record.py`. This will generate the binary record file that we can work with. If all goes well you should see a `train.record` and `val.record` in your directory.
+
+## Creating the Pipeline Config
+
+To train a model, we need to specify parameters such as number of classes and number of iterations to train on. First we need to download an existing model, one that we are retraining and specify our files.
+
+The model we are using is called SSD Mobilenet, which is a lightweight but less accurate model. Download the SSD Mobilenet V1 Coco model from [here](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) and copy the extracted folder into our current directory.
+
+Next we need to find the SSD pipeline config from [here](https://github.com/tensorflow/models/tree/master/research/object_detection/samples/configs) and copy that into our directory as well. 
+There are a few things we need to change in the config file such as: 
+
+- num_classes: set to the number of classes yoru are detecting
+
+- fine_tune_checkpoint: set to the directory of the downloaded SSD model.cpkt file
+
+- num_steps: limit this to the max amount of steps you want to perform. Typcally something fomr 40,000 - 25,000 is enough to get accurate results
+
+- input_path: set to the `train.record` and `val.record` respectively
+
+- label_map_path: set to the `annotations.pbtxt` file
+
+- num_examples: set this to the number of images you are evaluating. This should have been printed out when generating the record files.
+
+It is important to note that the paths should use forward slashes (`/`) even if you are on windows.
+
+Now that the records have been generated, it is time to start training.
+Run the following command:
+
+```
+# use python3 if you are on windows
+python /path/to/models/research/object_detection/train.py --logtostderr --train_dir=training --pipeline_config_path=ssd_mobilenet_v1_coco.config  
+```
+
+If everything is setup correctly training should start, and checkpoint files will be saved periodically.
+
+## Export Inference Graph
+
+By default tensorflow generates models in a split-file format. Typically it's nicer to work with frozen inference graph, which is the graph files all compressed into a single file protocol buffer format. To create this graph run the following command:
+
+```
+python /path/to/models/research/object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path ssd_mobilenet_v1_coco.config --trained_checkpoint_prefix training/model.cpkt-XXXX --output_directory inference_graph
+# replace the XXXX with the latest number in your training directory
+``` 
+
+the frozen graph should be saved into the inference_graph directory as frozen_inference_graph.pb. You should now be able to execute your graph

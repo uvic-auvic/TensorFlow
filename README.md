@@ -16,7 +16,7 @@ coming soon...
 
 # How well does it run?
 
-Benchmark TensorFlow with your model on yoursystem 
+Benchmark TensorFlow with your model on your system [here](/inference)
 
 
 
