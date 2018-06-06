@@ -22,6 +22,18 @@ annotations
     file_2.xml
     ...
 ```
+incase you have .png images please convert them to .jpg using the following script in python3
+```
+from glob import glob                                                           
+from PIL import Image
+
+pngs = glob('./*.png')
+
+for j in pngs:
+	im = Image.open(j)
+	rgb_im = im.convert('RGB')
+	rgb_im.save(j[:-3] + 'jpg')
+```
 
 ## Annotating
 
