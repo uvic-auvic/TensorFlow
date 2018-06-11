@@ -54,7 +54,7 @@ set PYTHONPATH="C:\path\to\models;C:\path\to\models\research;C:\path\to\models\r
 On Linux
 
 ```
-export PYTHONPATH=$PYTHONPATH:/path/to/models:/path/to/models/researc:/path/to/models/research/slim:/path/to/models/research/object_detection
+export PYTHONPATH=$PYTHONPATH:/path/to/models:/path/to/models/research:/path/to/models/research/slim:/path/to/models/research/object_detection
 ```
 
 It is important to note that the relevant subdirectories of models need to get added as well.
