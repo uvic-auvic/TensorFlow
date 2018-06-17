@@ -31,12 +31,11 @@ FLAGS = flags.FLAGS
 
 
 classes = []
-
 def autogen_annotations():
     annotations_string = ""
     for idx, c in enumerate(classes, 1):
         annotations_string += "item {\n\t id: %d\n\t name: '%s'\n}\n\n" % (idx, c)
-    with open('annotation.pbtxt') as f:
+    with open('annotation.pbtxt', 'w') as f:
         f.write(annotations_string)
 
 
