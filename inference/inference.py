@@ -1,3 +1,21 @@
+######## Video Object Detection Using Tensorflow-trained Classifier #########
+#
+# Author: Evan Juras
+# Date: 1/16/18
+# Description: 
+# This program uses a TensorFlow-trained classifier to perform object detection.
+# It loads the classifier uses it to perform object detection on a video.
+# It draws boxes and scores around the objects of interest in each frame
+# of the video.
+
+## Some of the code is copied from Google's example at
+## https://github.com/tensorflow/models/blob/master/research/object_detection/object_detection_tutorial.ipynb
+
+## and some is copied from Dat Tran's example at
+## https://github.com/datitran/object_detector_app/blob/master/object_detection_app.py
+
+## but I changed it to make it more understandable to me.
+
 # Import packages
 import os
 import cv2
@@ -8,17 +26,28 @@ import sys
 # This is needed since the notebook is stored in the object_detection fold
 
 # Import utilites
-from utils import label_map_util
-from utils import visualization_utils as vis_util
+import label_map_util
+import visualization_utils as vis_util
 
+# Name of the directory containing the object detection module we're using
+VIDEO_NAME = 'jabulani_vid2.mp4'
+
+# Grab path to current working directory
 CWD_PATH = os.getcwd()
 
-## Relevent parameters
-VIDEO_NAME = 'SET_NAME_OF_VIDEO_HERE'
-PATH_TO_VIDEO = os.path.join(CWD_PATH,VIDEO_NAME)
+# Path to frozen detection graph .pb file, which contains the model that is used
+# for object detection.
 PATH_TO_CKPT = os.path.join(CWD_PATH,'frozen_inference_graph.pb')
+
+# Path to label map file
 PATH_TO_LABELS = os.path.join(CWD_PATH,'annotation.pbtxt')
+
+# Path to video
+PATH_TO_VIDEO = os.path.join(CWD_PATH,VIDEO_NAME)
+
+# Number of classes the object detector can identify
 NUM_CLASSES = 1
+
 FPS = 30
 
 # Load the label map.
