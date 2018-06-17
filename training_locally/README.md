@@ -67,7 +67,7 @@ This command may not work on windows, because of globbing, and you may have to l
 
 ## Creating the TF records
 
-After all the images have been annotated, create a file called `annotation.pbtext`. In this file you should list all the classes you want to build your model around. The structure should look like this
+After all the images have been annotated, create a file called `annotation.pbtxt`. In this file you should list all the classes you want to build your model around. The structure should look like this. 
 
 ```
 item {

@@ -29,9 +29,19 @@ flags.DEFINE_string('image_dir', '', 'Path to the image directory')
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
 FLAGS = flags.FLAGS
 
-# TO-DO replace this with label map
+
+classes = []
+
+def autogen_annotations():
+    annotations_string = ""
+    for idx, c in enumerate(classes, 1):
+        annotations_string += "item {\n\t id: %d\n\t name: '%s'\n}\n\n" % (idx, c)
+    with open('annotation.pbtxt') as f:
+        f.write(annotations_string)
+
+
 def class_text_to_int(row_label):
-    return 1
+    return 1 + classes.index(row_label)
 
 
 def split(df, group):
@@ -140,17 +150,21 @@ def create_train_val(image_dir):
     xml_train = xml_to_csv(val_files)
     xml_train.to_csv(('val_labels.csv'), index=None)
     print("%d examples used for eval. Make sure you change this in your config file under \'num_examples\'" % len(val_files))    
-    
+
+
+
 def main(_):
     IMAGE_DIR = 'images'
     create_train_val(IMAGE_DIR)
     # Copy all the files to a new directory
     ALL_IMAGES_DIR = 'all_images'
     os.mkdir(ALL_IMAGES_DIR)
-    for folder in os.listdir(IMAGE_DIR):
+    for folder in sorted(os.listdir(IMAGE_DIR)):
+        classes.append(folder)
         path = os.path.join(os.getcwd(), IMAGE_DIR, folder)
         for image in os.listdir(path):
             copy(os.path.join(path, image), ALL_IMAGES_DIR)
+    autogen_annotations()
     IMAGES_DIR = 'all_images'
     create_tf_record('train_labels.csv', ALL_IMAGES_DIR, 'train.record')
     create_tf_record('val_labels.csv', ALL_IMAGES_DIR, 'val.record')
