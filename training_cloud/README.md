@@ -21,8 +21,6 @@ annotations (folder)
     ...
 
 annotation.pbtext
-ssd_mobilenet_v1_coco.config
-
 ```
 
 2. Get a Google account if you don't already have one. Open up google drive and create a folder called `tf_training`. Copy all the folders listed above as well as the [tf_cloud_training.ipynb](/training_cloud/tf_cloud_training.ipynb) into `tf_training`. 
