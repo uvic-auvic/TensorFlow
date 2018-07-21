@@ -29,26 +29,14 @@ import sys
 import label_map_util
 import visualization_utils as vis_util
 
-# Name of the directory containing the object detection module we're using
-VIDEO_NAME = 'jabulani_vid2.mp4'
-
-# Grab path to current working directory
+VIDEO_NAME = 'vid_2.mp4'
 CWD_PATH = os.getcwd()
-
-# Path to frozen detection graph .pb file, which contains the model that is used
-# for object detection.
 PATH_TO_CKPT = os.path.join(CWD_PATH,'frozen_inference_graph.pb')
-
-# Path to label map file
 PATH_TO_LABELS = os.path.join(CWD_PATH,'annotation.pbtxt')
-
-# Path to video
 PATH_TO_VIDEO = os.path.join(CWD_PATH,VIDEO_NAME)
-
-# Number of classes the object detector can identify
 NUM_CLASSES = 1
 
-FPS = 30
+FPS = 10
 
 # Load the label map.
 # Label maps map indices to category names, so that when our convolution
@@ -90,13 +78,21 @@ delay_time_ms = int(1000 / (FPS))
 
 # Open video file
 video = cv2.VideoCapture(PATH_TO_VIDEO)
+width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
+height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+scale = 5
+dim = (int(width/scale), int(height/scale))
+
 
 while(video.isOpened()):
 
     # Acquire frame and expand frame dimensions to have shape: [1, None, None, 3]
     # i.e. a single-column array, where each item in the column has the pixel RGB value
     ret, frame = video.read()
-    frame_expanded = np.expand_dims(frame, axis=0)
+    if not ret:
+        break
+    scaled_frame = cv2.resize(frame, dim)
+    frame_expanded = np.expand_dims(scaled_frame, axis=0)
 
     # Perform the actual detection by running the model with the image as input
     (boxes, scores, classes, num) = sess.run(
@@ -105,7 +101,7 @@ while(video.isOpened()):
 
     # Draw the results of the detection (aka 'visulaize the results')
     vis_util.visualize_boxes_and_labels_on_image_array(
-        frame,
+        scaled_frame,
         np.squeeze(boxes),
         np.squeeze(classes).astype(np.int32),
         np.squeeze(scores),
@@ -115,7 +111,7 @@ while(video.isOpened()):
         min_score_thresh=0.95)
 
     # All the results have been drawn on the frame, so it's time to display it.
-    cv2.imshow('Object detector', frame)
+    cv2.imshow('Object detector', scaled_frame)
 
     # Press 'q' to quit
     if cv2.waitKey(delay_time_ms) == ord('q'):
